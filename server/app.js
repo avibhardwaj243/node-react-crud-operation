@@ -32,6 +32,20 @@ app.use(fileUpload());
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
+app.post('/upload', (req, res, next) => {
+	// console.log(req);
+	let imageFile = req.files.file;
+
+	imageFile.mv(`${__dirname}/public/${req.body.filename}.jpg`, err => {
+		if (err) {
+			return res.status(500).send(err);
+		}
+
+		res.json({ file: `public/${req.body.filename}.jpg` });
+		console.log(res.json);
+	});
+});
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
 const err = new Error('Not Found');
