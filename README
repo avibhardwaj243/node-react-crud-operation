@@ -3,6 +3,12 @@ node-react-crud-operation
 https://www.zeolearn.com/magazine/connecting-reactjs-frontend-with-nodejs-backend
 
 
+1) open 3 diffrent terminals
+2) goto terminal 1, and cd server/ , and run cmd npm start for node server to start
+3) goto terminal 2, and cd node-react-fileupload-front-end/ , and run cmd npm start for react server to start
+4) goto terminal 3, for change in directly 
 
 
-http://localhost:3000
+Node : http://localhost:4000/
+
+React : http://localhost:3000
