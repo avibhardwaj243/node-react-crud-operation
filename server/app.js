@@ -7,10 +7,17 @@ const bodyParser = require('body-parser');
 const cors = require('cors'); // addition we make
 const fileUpload = require('express-fileupload'); //addition we make
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-
 var app = express();
+
+// Use CORS and File Upload modules here
+app.use(cors());
+app.use(fileUpload());
+
+const index = require('./routes/index.route'); // Imports routes for the index
+app.use('/', index);
+
+const user = require('./routes/user.route'); // Imports routes for the index
+app.use('/user', user);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -24,27 +31,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/public', express.static(__dirname + '/public'));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
-// Use CORS and File Upload modules here
-app.use(cors());
-app.use(fileUpload());
-
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-
-app.post('/upload', (req, res, next) => {
-	// console.log(req);
-	let imageFile = req.files.file;
-
-	imageFile.mv(`${__dirname}/public/${req.body.filename}.jpg`, err => {
-		if (err) {
-			return res.status(500).send(err);
-		}
-
-		res.json({ file: `public/${req.body.filename}.jpg` });
-		console.log(res.json);
-	});
-});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
