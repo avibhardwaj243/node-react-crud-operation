@@ -12,7 +12,7 @@ exports.user_upload = function(req, res, next){
     //
     // if( !errors ) {   //No errors were found.  Passed Validation!
       let imageFile = req.files.file;
-    	imageFile.mv(`/var/www/html/node-react-crud-operation/server/public/${req.body.filename}.jpg`, err => {
+    	imageFile.mv(`/var/www/html/node-react-crud-operation/backend/public/${req.body.filename}.jpg`, err => {
     		if (err) {
           console.log(err);
     			return res.status(500).send(err);
