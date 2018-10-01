@@ -34,3 +34,11 @@ exports.user_upload = function(req, res, next){
     //     })
     // }
 };
+
+// user_login New POST ACTION
+exports.user_login = function(req, res, next){
+    console.log(req.body);
+    res.json({ file: 'asdas' });
+    //console.log(req.json);
+    //res.send('respond with a resource');
+};

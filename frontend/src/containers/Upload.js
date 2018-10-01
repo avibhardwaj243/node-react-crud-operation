@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import '../App.css';
+import constant from '../Environment/Constants.js';
 
 class Upload extends Component {
 	constructor(props) {
@@ -13,21 +14,21 @@ class Upload extends Component {
 	}
 
 	handleUploadImage(ev) {
-		ev.preventDefault();
-
-		const data = new FormData();
-		data.append('file', this.uploadInput.files[0]);
-		data.append('filename', this.fileName.value);
-
-		fetch('http://localhost:4000/user/upload', {
-			method: 'POST',
-			body: data
-		}).then(response => {
-			response.json().then(body => {
-				this.setState({ imageURL: `http://localhost:4000/${body.file}` });
-			        });
-		        });
-	        }
+            ev.preventDefault();
+            const data = new FormData();
+            data.append('file', this.uploadInput.files[0]);
+            data.append('filename', this.fileName.value);
+            
+            const requestURL = constant.BACKEND_URL + 'user/upload';
+            fetch(requestURL, {
+                    method: 'POST',
+                    body: data
+            }).then(response => {
+                response.json().then(body => {
+                    this.setState({ imageURL: constant.BACKEND_URL+`${body.file}` });
+                });
+            });
+        }
 
 	render() {
 		return (

@@ -50,4 +50,7 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+
 module.exports = app;
