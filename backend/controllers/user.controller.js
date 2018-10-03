@@ -37,6 +37,8 @@ exports.user_upload = function(req, res, next){
 
 // user_login New POST ACTION
 exports.user_login = function(req, res, next){
+    req.body.username = "test";
+    req.body.password = "123456";
     console.log(req.body);
     res.json({ file: 'asdas' });
     //console.log(req.json);
