@@ -1,4 +1,6 @@
+const jwt = require('jsonwebtoken');
 const User = require('../models/user.model');
+const Constants = require('../Environment/Constants.js');
 
 exports.index = function(req, res, next){
   res.send('respond with a resource');
@@ -12,7 +14,7 @@ exports.user_upload = function(req, res, next){
     //
     // if( !errors ) {   //No errors were found.  Passed Validation!
       let imageFile = req.files.file;
-    	imageFile.mv(`/var/www/html/node-react-crud-operation/backend/public/${req.body.filename}.jpg`, err => {
+    	imageFile.mv(Constants.BACKEND_URL_RELATIVE_PATH + `${req.body.filename}.jpg`, err => {
     		if (err) {
           console.log(err);
     			return res.status(500).send(err);
@@ -37,10 +39,21 @@ exports.user_upload = function(req, res, next){
 
 // user_login New POST ACTION
 exports.user_login = function(req, res, next){
-    req.body.username = "test";
-    req.body.password = "123456";
-    console.log(req.body);
-    res.json({ file: 'asdas' });
+//    req.body.username = "test";
+//    req.body.password = "123456";
+//    console.log(req.body);
+
+    const token = jwt.sign(
+        {
+            username : req.body.username,
+            password : req.body.password,
+        }, 
+        Constants.SECRET_KEY, 
+        {
+            expiresIn : "1h"
+        }
+    );
+    res.json({ token: token });
     //console.log(req.json);
     //res.send('respond with a resource');
 };
