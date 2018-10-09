@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/user.model');
-const Constants = require('../Environment/Constants.js');
+var constant = require('../Environment/constant');
+const UserModel = require('../models/user.model');
 
 exports.index = function(req, res, next){
   res.send('respond with a resource');
@@ -14,7 +14,7 @@ exports.user_upload = function(req, res, next){
     //
     // if( !errors ) {   //No errors were found.  Passed Validation!
       let imageFile = req.files.file;
-    	imageFile.mv(Constants.BACKEND_URL_RELATIVE_PATH + `${req.body.filename}.jpg`, err => {
+    	imageFile.mv(constant.BACKEND_URL_RELATIVE_PATH + `${req.body.filename}.jpg`, err => {
     		if (err) {
           console.log(err);
     			return res.status(500).send(err);
@@ -38,22 +38,34 @@ exports.user_upload = function(req, res, next){
 };
 
 // user_login New POST ACTION
-exports.user_login = function(req, res, next){
-//    req.body.username = "test";
-//    req.body.password = "123456";
-//    console.log(req.body);
-
-    const token = jwt.sign(
-        {
-            username : req.body.username,
-            password : req.body.password,
-        }, 
-        Constants.SECRET_KEY, 
-        {
-            expiresIn : "1h"
-        }
-    );
-    res.json({ token: token });
-    //console.log(req.json);
-    //res.send('respond with a resource');
+exports.user_login = function (req, res, next) {
+    req.getConnection(function (error, conn) {
+        var userModelObj = new UserModel(conn);
+        var searchWhere = " username = '"+req.body.username+"'";
+        var orderByColumn = "id";
+        var orderBy = "desc";
+        
+        var query = 'SELECT * FROM users WHERE ' + searchWhere + ' ORDER BY ' + orderByColumn + ' ' + orderBy + " LIMIT 0,1";
+        userModelObj.executeQuery(query, function (err, rows) {
+            if (err) {
+                res.send({title: 'User List', message : 'Some Error Has occured : ' + err, data: ''});
+            } else {
+                if(rows === undefined){
+                    res.send({title: 'User List', message : 'auth fail : '});
+                } else {
+                    const token = jwt.sign(
+                        {
+                            username: req.body.username,
+                            password: req.body.password,
+                        },
+                        constant.SECRET_KEY,
+                        {
+                            expiresIn: "1h"
+                        }
+                    );
+                    res.json({token: token});
+                }
+            }
+        });
+    });
 };
