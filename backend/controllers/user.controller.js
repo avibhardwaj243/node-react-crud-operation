@@ -1,9 +1,29 @@
 const jwt = require('jsonwebtoken');
+const nJwt = require('njwt');//decode token
 var constant = require('../Environment/constant');
 const UserModel = require('../models/user.model');
+var redis = require('redis').createClient();
 
-exports.index = function(req, res, next){
-  res.send('respond with a resource');
+
+exports.index = function (req, res, next) {
+    if (req.headers.xtoken != undefined && req.headers.xtoken !== null) {
+        var loginTokenKey = constant.LOGIN_TOKEN_KEY_NAME + constant.GLOBAL_SEPRATOR + req.headers.xtoken;
+        redis.get(loginTokenKey, function (error, result) {
+            if (error) {
+                res.send({title: 'Main Page', message: 'Welcome to main page, Please login'});
+            } else {
+                if (req.headers.xtoken === result) {
+                    var decryptSecert = nJwt.verify(req.headers.xtoken, constant.SECRET_KEY, 'HS256');
+                    var decryptSecertString = JSON.parse(JSON.stringify(decryptSecert));
+                    res.send({title: 'Main Page', message: 'Welcome to main page ' + decryptSecertString.body.customer_name + ', Logout'});
+                } else {
+                    res.send({title: 'Main Page', message: 'Welcome to main page, Please login'});
+                }
+            }
+        });
+    } else {
+        res.send({title: 'Main Page', message: 'Welcome to main page, Please login : xtoken missing in header'});
+    }
 };
 
 // Upload New POST ACTION
@@ -56,16 +76,28 @@ exports.user_login = function (req, res, next) {
                     const token = jwt.sign(
                         {
                             username: req.body.username,
-                            password: req.body.password,
+                            customer_name: rows[0].name,
                         },
                         constant.SECRET_KEY,
                         {
                             expiresIn: "1h"
                         }
                     );
-                    res.json({token: token});
+                    redis.set(constant.LOGIN_TOKEN_KEY_NAME+constant.GLOBAL_SEPRATOR+token, token);
+                    res.send({title: 'User Login', message : 'Welcome '+rows[0].name, token : token});
                 }
             }
         });
     });
+};
+
+
+exports.user_logout = function (req, res, next) {
+    if (req.headers.xtoken != undefined && req.headers.xtoken !== null) {
+        var loginTokenKey = constant.LOGIN_TOKEN_KEY_NAME + constant.GLOBAL_SEPRATOR + req.headers.xtoken;
+        redis.del(loginTokenKey);
+        res.send({title: 'Main Page', message: 'Logout Succesfully'});
+    } else {
+        res.send({title: 'Main Page', message: 'xtoken missing in header'});
+    }
 };
