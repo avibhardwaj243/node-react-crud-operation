@@ -9,7 +9,14 @@ var app = express();
 
 var mysql = require('mysql');
 var myConnection  = require('express-myconnection');
-var redis = require("redis");
+
+//var redis = require("redis");
+//var client = redis.createClient(); // this creates a new client, By default redis.createClient() will use 127.0.0.1 and port 6379
+////var client = redis.createClient(port, host);
+//client.on('connect', function() {
+//    console.log('Redis client connected');
+//});
+
 var config = require('./Environment/db-config');
 
 var dbOptions = {
